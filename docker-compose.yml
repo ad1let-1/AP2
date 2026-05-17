@@ -1,0 +1,166 @@
+version: '3.9'
+
+# ─────────────────────────────────────────────────────────────────
+# NOVUS Online Shop — Full Stack Docker Compose
+#
+# Services:
+#   Infrastructure : postgres, redis, nats
+#   Backend (gRPC) : user-service, product-service, order-service
+#   Gateway (HTTP) : api-gateway  → :8080
+#   Frontend       : frontend     → :3000  (Nginx SPA + API proxy)
+# ─────────────────────────────────────────────────────────────────
+
+networks:
+  shop-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+    name: novus_pgdata
+
+# ─── Infrastructure ────────────────────────────────────────────────
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: bekarys7
+      POSTGRES_DB:       postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - shop-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - shop-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "4222:4222"
+      - "8222:8222"   # monitoring
+    networks:
+      - shop-net
+
+# ─── Backend Microservices (gRPC) ──────────────────────────────────
+
+  user-service:
+    build:
+      context: ./test-ap2/online-shop
+      dockerfile: user-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:bekarys7@postgres:5432/postgres?sslmode=disable
+      NATS_URL:     nats://nats:4222
+    ports:
+      - "50051:50051"
+    networks:
+      - shop-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  product-service:
+    build:
+      context: ./test-ap2/online-shop
+      dockerfile: product-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:bekarys7@postgres:5432/postgres?sslmode=disable
+      REDIS_ADDR:   redis:6379
+      NATS_URL:     nats://nats:4222
+    ports:
+      - "50052:50052"
+    networks:
+      - shop-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  order-service:
+    build:
+      context: ./test-ap2/online-shop
+      dockerfile: order-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:bekarys7@postgres:5432/postgres?sslmode=disable
+      NATS_URL:     nats://nats:4222
+    ports:
+      - "50053:50053"
+    networks:
+      - shop-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+# ─── API Gateway (HTTP → gRPC fan-out) ─────────────────────────────
+
+  api-gateway:
+    build:
+      context: ./test-ap2/online-shop
+      dockerfile: api-gateway/Dockerfile
+    restart: unless-stopped
+    environment:
+      USER_SERVICE_URL:    user-service:50051
+      PRODUCT_SERVICE_URL: product-service:50052
+      ORDER_SERVICE_URL:   order-service:50053
+    ports:
+      - "8080:8080"
+    networks:
+      - shop-net
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+# ─── Frontend (React + Nginx) ───────────────────────────────────────
+
+  frontend:
+    build:
+      context: .          # d:\Golang\final test
+      dockerfile: Dockerfile
+      args:
+        # API URL is nginx-local; nginx proxies /api/* → api-gateway:8080
+        VITE_API_URL: /api
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - shop-net
+    depends_on:
+      api-gateway:
+        condition: service_healthy

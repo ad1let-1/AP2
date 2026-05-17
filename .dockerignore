@@ -1,0 +1,18 @@
+# Node modules and build output
+node_modules
+dist
+.git
+
+# Dev environment files
+.env.local
+.env.*.local
+*.log
+
+# Editor artifacts
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

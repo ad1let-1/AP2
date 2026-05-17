@@ -1,0 +1,175 @@
+.page {
+  padding: var(--space-12) 0 var(--space-24);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-10);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  margin-bottom: var(--space-1);
+}
+
+.resultCount {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filterToggle {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-alt);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.filterToggle:hover { color: var(--color-text); border-color: var(--color-text); }
+
+.sortSelect {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-alt);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.sortSelect:focus { border-color: var(--color-accent); }
+
+/* ---- Layout ---- */
+.layout {
+  display: flex;
+  gap: var(--space-10);
+  align-items: flex-start;
+}
+
+.sidebar {
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- Pagination ---- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+}
+
+.pageBtn {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-alt);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.pageBtn:hover:not(:disabled) {
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+.pageBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.pageNumbers {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pageNumBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+.pageNumBtn:hover { color: var(--color-text); background: var(--color-surface); }
+.activePage {
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent-dim) !important;
+  background: var(--color-accent-dim) !important;
+}
+
+/* ---- Mobile filter drawer ---- */
+.mobileBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: var(--z-drawer);
+}
+
+.mobileFilterDrawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 90vw);
+  background: var(--color-bg-alt);
+  border-right: 1px solid var(--color-border);
+  z-index: calc(var(--z-drawer) + 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mobileFilterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+}
+.mobileFilterHeader button {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  transition: color var(--transition-fast);
+}
+.mobileFilterHeader button:hover { color: var(--color-text); }
+
+.mobileFilterContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .filterToggle { display: flex; }
+  .layout { gap: 0; }
+}

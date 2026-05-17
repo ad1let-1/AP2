@@ -1,0 +1,150 @@
+.empty {
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.emptyContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+.emptyIcon { font-size: 4rem; }
+.emptyTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  letter-spacing: 0.05em;
+}
+.emptyText { color: var(--color-text-muted); }
+
+/* ---- Page ---- */
+.pageTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+  letter-spacing: 0.04em;
+  padding-top: var(--space-12);
+  margin-bottom: var(--space-2);
+}
+.itemCount {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-10);
+}
+
+/* ---- Layout ---- */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-12);
+  align-items: flex-start;
+  padding-bottom: var(--space-24);
+}
+
+/* ---- Items ---- */
+.items {}
+.itemsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-5);
+}
+.clearBtn {
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transition-fast);
+}
+.clearBtn:hover { color: var(--color-error); }
+.continueLink {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+.continueLink:hover { color: var(--color-text); }
+
+/* ---- Summary ---- */
+.summary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  position: sticky;
+  top: calc(var(--navbar-height) + var(--space-4));
+}
+.summaryTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  letter-spacing: 0.05em;
+}
+
+/* ---- Shipping progress ---- */
+.shippingBanner { display: flex; flex-direction: column; gap: var(--space-2); }
+.progressBar {
+  height: 3px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: var(--color-accent);
+  max-width: 100%;
+}
+.progressText {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ---- Rows ---- */
+.summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.freeShipping { color: var(--color-success); font-weight: 500; }
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-base);
+  font-weight: 600;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-alt);
+}
+
+/* ---- Payment icons ---- */
+.paymentIcons {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+.paymentIcon {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text-dim);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary { position: static; }
+}

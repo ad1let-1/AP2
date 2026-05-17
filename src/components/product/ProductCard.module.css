@@ -1,0 +1,168 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: transparent;
+}
+
+/* ---- Image area ---- */
+.imageLink {
+  display: block;
+  text-decoration: none;
+}
+
+.imageWrapper {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #f5f4f2;  /* light cream — A&O product card bg */
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+.imagePrimary { z-index: 1; }
+.imageSecondary { z-index: 2; }
+
+/* ---- Tags ---- */
+.tags {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tagNew, .tagSale {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: var(--radius-xs);
+}
+.tagNew  { background: var(--color-bg); color: var(--color-text); }
+.tagSale { background: var(--color-accent); color: var(--color-bg); }
+
+/* ---- Wishlist ---- */
+.wishlistBtn {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  color: #666;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.wishlistBtn:hover { color: #222; }
+.wishlisted { color: #e53935 !important; }
+
+/* ---- Quick View overlay ---- */
+.quickViewOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: var(--space-3);
+}
+
+.quickViewBtn {
+  width: 100%;
+  background: rgba(10, 10, 10, 0.88);
+  color: #f0f0f0;
+  border: none;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background var(--transition-fast);
+  font-family: var(--font-body);
+}
+.quickViewBtn:hover {
+  background: rgba(10, 10, 10, 0.97);
+}
+
+/* ---- Product info ---- */
+.info {
+  padding: var(--space-3) 0 var(--space-2);
+}
+.infoLink {
+  display: block;
+  text-decoration: none;
+}
+
+.category {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.name {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--transition-fast);
+}
+.infoLink:hover .name { color: var(--color-accent); }
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.price {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+.originalPrice {
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+  text-decoration: line-through;
+}
+
+/* ---- Skeleton ---- */
+.skeletonImage {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: var(--color-surface);
+}
+.skeletonLine {
+  border-radius: var(--radius-xs);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: var(--color-surface);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
