@@ -3,9 +3,11 @@ import { useAuthStore } from '../store/authStore'
 
 const getToken = () => useAuthStore.getState().token
 
-export const authInstance = axios.create({ baseURL: import.meta.env.VITE_AUTH_URL || 'http://localhost:8081' })
-export const productInstance = axios.create({ baseURL: import.meta.env.VITE_PRODUCT_URL || 'http://localhost:8082' })
-export const orderInstance = axios.create({ baseURL: import.meta.env.VITE_ORDER_URL || 'http://localhost:8083' })
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+
+export const authInstance = axios.create({ baseURL })
+export const productInstance = axios.create({ baseURL })
+export const orderInstance = axios.create({ baseURL })
 
 const applyInterceptors = (instance) => {
   instance.interceptors.request.use(

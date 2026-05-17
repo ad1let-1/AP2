@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/ui/PageTransition'
 import ProductGrid from '../components/product/ProductGrid'
-import { useFeaturedProducts } from '../hooks/useProducts'
+import { useProductsList } from '../hooks/useProducts'
 import styles from './HomePage.module.css'
 
 /* ─── Editorial hero images ─────────────────────────────── */
@@ -38,7 +38,7 @@ const MARQUEE_TEXT = 'CLOTHING — GADGETS — TECH — FREE SHIPPING OVER $150 
  * full-bleed hero, clean product grid, category showcase.
  */
 export default function HomePage() {
-  const { data, isLoading } = useFeaturedProducts(8)
+  const { data, isLoading } = useProductsList({ limit: 8 })
   const products = data?.products || (Array.isArray(data) ? data : [])
 
   const heroRef = useRef(null)

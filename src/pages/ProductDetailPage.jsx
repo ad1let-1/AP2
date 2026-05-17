@@ -5,7 +5,7 @@ import PageTransition from '../components/ui/PageTransition'
 import ProductGrid from '../components/product/ProductGrid'
 import Button from '../components/ui/Button'
 import Loader from '../components/ui/Loader'
-import { useProduct, useRelatedProducts } from '../hooks/useProducts'
+import { useProductDetail, useProductsList } from '../hooks/useProducts'
 import { useCartStore } from '../store/cartStore'
 import toast from 'react-hot-toast'
 import styles from './ProductDetailPage.module.css'
@@ -17,10 +17,11 @@ const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
  */
 export default function ProductDetailPage() {
   const { id } = useParams()
-  const { data: product, isLoading, isError } = useProduct(id)
-  const { data: relatedData, isLoading: relatedLoading } = useRelatedProducts(
-    id, product?.category
-  )
+  const { data: product, isLoading, isError } = useProductDetail(id)
+  const { data: relatedData, isLoading: relatedLoading } = useProductsList({
+    category: product?.category,
+    limit: 4
+  })
   const related = relatedData?.products || relatedData || []
 
   const [selectedImage, setSelectedImage] = useState(0)

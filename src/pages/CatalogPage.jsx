@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/ui/PageTransition'
 import ProductGrid from '../components/product/ProductGrid'
 import ProductFilters from '../components/product/ProductFilters'
-import { useProducts } from '../hooks/useProducts'
+import { useProductsList } from '../hooks/useProducts'
 import { useFilterStore } from '../store/filterStore'
 import styles from './CatalogPage.module.css'
 
@@ -46,7 +46,7 @@ export default function CatalogPage() {
   }, [category, sort, minPrice, maxPrice, page]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const queryParams = getQueryParams()
-  const { data, isLoading, isFetching } = useProducts(queryParams)
+  const { data, isLoading, isFetching } = useProductsList(queryParams)
 
   const products = data?.products || data || []
   const total = data?.total || 0

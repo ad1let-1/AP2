@@ -5,7 +5,7 @@ import { authInstance } from './axiosInstance'
  * @param {{ name: string, email: string, password: string }} data
  */
 export const registerUser = async (data) => {
-  const response = await authInstance.post('/auth/register', data)
+  const response = await authInstance.post('/users/register', data)
   return response.data
 }
 
@@ -15,7 +15,7 @@ export const registerUser = async (data) => {
  * @returns {{ token: string, refresh_token: string, user: object }}
  */
 export const loginUser = async (data) => {
-  const response = await authInstance.post('/auth/login', data)
+  const response = await authInstance.post('/users/login', data)
   return response.data
 }
 
@@ -24,7 +24,7 @@ export const loginUser = async (data) => {
  * Returns current authenticated user data
  */
 export const getMe = async () => {
-  const response = await authInstance.get('/auth/me')
+  const response = await authInstance.get('/users/me')
   return response.data
 }
 
