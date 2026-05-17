@@ -63,3 +63,21 @@ export function useLogout() {
     },
   })
 }
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient()
+  const { user, setUser } = useAuthStore()
+
+  return useMutation({
+    mutationFn: (data) => import('../api/auth.api').then(m => m.updateUser(user?.id, data)),
+    onSuccess: (data) => {
+      if (data.user) setUser(data.user)
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+      toast.success('Profile updated')
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || 'Failed to update profile'
+      toast.error(message)
+    },
+  })
+}

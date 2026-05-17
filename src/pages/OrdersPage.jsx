@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import PageTransition from '../components/ui/PageTransition'
 import Loader from '../components/ui/Loader'
-import { useOrders } from '../hooks/useOrders'
+import { useOrdersList } from '../hooks/useOrders'
 import styles from './OrdersPage.module.css'
 
 const STATUS_COLORS = {
@@ -17,7 +17,7 @@ const STATUS_COLORS = {
  * Orders history page listing all user orders.
  */
 export default function OrdersPage() {
-  const { data, isLoading, isError } = useOrders()
+  const { data, isLoading, isError } = useOrdersList()
   const orders = data?.orders || data || []
 
   return (
