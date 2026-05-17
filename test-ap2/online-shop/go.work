@@ -1,0 +1,9 @@
+go 1.21
+
+use (
+	./api-gateway
+	./order-service
+	./pb
+	./product-service
+	./user-service
+)
