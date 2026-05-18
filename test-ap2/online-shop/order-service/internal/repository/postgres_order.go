@@ -23,12 +23,23 @@ func NewPostgresOrderRepository(db *sql.DB) domain.OrderRepository {
 }
 
 func (r *postgresOrderRepository) CreateOrder(o *domain.Order) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	o.ID = uuid.New().String()
 	o.CreatedAt = time.Now()
 	itemsJSON, _ := json.Marshal(o.Items)
-	_, err := r.db.Exec("INSERT INTO orders (id, user_id, items, total_amount, status, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
+	
+	_, err = tx.Exec("INSERT INTO orders (id, user_id, items, total_amount, status, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
 		o.ID, o.UserID, itemsJSON, o.TotalAmount, o.Status, o.CreatedAt)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (r *postgresOrderRepository) GetOrderByID(id string) (*domain.Order, error) {
@@ -72,10 +83,20 @@ func (r *postgresOrderRepository) UpdateOrderStatus(id, status string) error {
 }
 
 func (r *postgresOrderRepository) CreatePayment(p *domain.Payment) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	p.ID = uuid.New().String()
-	_, err := r.db.Exec("INSERT INTO payments (id, order_id, payment_method, status) VALUES ($1, $2, $3, $4)",
+	_, err = tx.Exec("INSERT INTO payments (id, order_id, payment_method, status) VALUES ($1, $2, $3, $4)",
 		p.ID, p.OrderID, p.PaymentMethod, p.Status)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (r *postgresOrderRepository) GetPayment(id string) (*domain.Payment, error) {

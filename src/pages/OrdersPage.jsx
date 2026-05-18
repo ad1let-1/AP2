@@ -89,7 +89,7 @@ export default function OrdersPage() {
                     {(order.items || []).slice(0, 3).map((item, idx) => (
                       <div key={idx} className={styles.orderItem}>
                         <img
-                          src={item.image || `https://picsum.photos/seed/${item.productId}/60/60`}
+                          src={item.image || `https://picsum.photos/seed/${item.product_id}/60/60`}
                           alt={item.name || 'Product'}
                           className={styles.itemImg}
                         />

@@ -31,7 +31,15 @@ export default function ProductDetailPage() {
   const addItem = useCartStore((s) => s.addItem)
   const openDrawer = useCartStore((s) => s.openDrawer)
 
-  const isClothing = product?.category === 'clothing'
+  const getCategoryName = (id) => {
+    if (id === '11111111-1111-1111-1111-111111111111') return 'clothing'
+    if (id === '22222222-2222-2222-2222-222222222222') return 'gadgets'
+    if (id === '33333333-3333-3333-3333-333333333333') return 'tech'
+    return 'clothing'
+  }
+
+  const categoryName = getCategoryName(product?.category_id)
+  const isClothing = categoryName === 'clothing'
 
   const handleAddToCart = () => {
     if (isClothing && !selectedSize) {
@@ -43,7 +51,7 @@ export default function ProductDetailPage() {
       name: product.name,
       price: product.price,
       image: images[0],
-      category: product.category,
+      category: categoryName,
       size: selectedSize,
     })
     setAdded(true)
@@ -89,8 +97,8 @@ export default function ProductDetailPage() {
           <span>/</span>
           <Link to="/shop">Shop</Link>
           <span>/</span>
-          <Link to={`/shop?category=${product.category}`} className={styles.breadcrumbCat}>
-            {product.category}
+          <Link to={`/shop?category=${categoryName}`} className={styles.breadcrumbCat}>
+            {categoryName}
           </Link>
           <span>/</span>
           <span className={styles.breadcrumbCurrent}>{product.name}</span>
@@ -131,7 +139,7 @@ export default function ProductDetailPage() {
 
           {/* ---- Product info ---- */}
           <div className={styles.info}>
-            <span className={styles.category}>{product.category}</span>
+            <span className={styles.category}>{categoryName}</span>
             <h1 className={styles.name}>{product.name}</h1>
 
             <div className={styles.priceRow}>
@@ -188,7 +196,7 @@ export default function ProductDetailPage() {
             {/* Product details */}
             <div className={styles.details}>
               {[
-                { label: 'Category', value: product.category },
+                { label: 'Category', value: categoryName },
                 { label: 'SKU', value: product.sku || `NOV-${product.id?.slice(0, 8).toUpperCase()}` },
                 { label: 'Stock', value: product.stock > 0 ? `${product.stock} available` : 'Low stock' },
               ].map(({ label, value }) => (

@@ -1,312 +1,468 @@
 {
-	"info": {
-		"_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-		"name": "Online Shop API",
-		"description": "Collection for testing User, Product, and Order microservices.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Users",
-			"item": [
-				{
-					"name": "Register User",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"name\": \"Postman Tester\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/users/register",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"if (jsonData.access_token) {",
-									"    pm.environment.set(\"token\", jsonData.access_token);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/users/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get My Profile",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/me",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"me"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Products",
-			"item": [
-				{
-					"name": "List Products",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/products?page=1&limit=10",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"products"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Category",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Electronics\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/products/categories",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"products",
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Product",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Gaming Laptop\",\n    \"description\": \"High performance RTX 4080\",\n    \"price\": 1200000,\n    \"stock\": 5,\n    \"category_id\": \"PASTE_CATEGORY_ID_HERE\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/products",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"products"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Orders",
-			"item": [
-				{
-					"name": "Create Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"items\": [\n        {\n            \"product_id\": \"PASTE_PRODUCT_ID_HERE\",\n            \"quantity\": 1,\n            \"price\": 1200000\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/orders",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"orders"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Order By ID",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/orders/PASTE_ORDER_ID_HERE",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"orders",
-								"PASTE_ORDER_ID_HERE"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8080/api",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "name": "Online Shop API - Full",
+    "description": "Full REST collection for the API Gateway. Run Register/Login first, then create a category, product, order, and payment to fill chained variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Users & Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.user && json.user.id) pm.collectionVariables.set('user_id', json.user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"{{name}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/users/register"
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) pm.collectionVariables.set('token', json.access_token);",
+                  "if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);",
+                  "if (json.user && json.user.id) pm.collectionVariables.set('user_id', json.user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/users/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) pm.collectionVariables.set('token', json.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/auth/logout"
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/users/verify?token={{verify_token}}"
+          }
+        },
+        {
+          "name": "Resend Verification",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/users/resend-verification"
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/users/me"
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/users?page=1&limit=10"
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/users/{{user_id}}"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{name}} Updated\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/users/{{user_id}}"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"old_password\": \"{{password}}\",\n  \"new_password\": \"{{new_password}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/users/{{user_id}}/password"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/users/{{user_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/products?page=1&limit=10" }
+        },
+        {
+          "name": "Search Products",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/products/search?q={{search_query}}&page=1&limit=10" }
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.product && json.product.id) pm.collectionVariables.set('product_id', json.product.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{product_name}}\",\n  \"description\": \"{{product_description}}\",\n  \"price\": 1200000,\n  \"stock\": 5,\n  \"category_id\": \"{{category_id}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/products"
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/products/{{product_id}}" }
+        },
+        {
+          "name": "Get Product Reviews",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/products/{{product_id}}/reviews" }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{product_name}} Updated\",\n  \"description\": \"{{product_description}} Updated\",\n  \"price\": 1250000,\n  \"category_id\": \"{{category_id}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "Update Product Stock",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 10\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/products/{{product_id}}/stock"
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/categories" }
+        },
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.category && json.category.id) pm.collectionVariables.set('category_id', json.category.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{category_name}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/categories"
+          }
+        },
+        {
+          "name": "Create Category Via Products Alias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.category && json.category.id) pm.collectionVariables.set('category_id', json.category.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{category_name}} Alias\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/products/categories"
+          }
+        },
+        {
+          "name": "Get Category By ID",
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/categories/{{category_id}}" }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.order && json.order.id) pm.collectionVariables.set('order_id', json.order.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"{{product_id}}\",\n      \"quantity\": 1,\n      \"price\": 1200000\n    }\n  ]\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/orders"
+          }
+        },
+        {
+          "name": "List Orders",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/orders?page=1&limit=10"
+          }
+        },
+        {
+          "name": "Calculate Total",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"{{product_id}}\",\n      \"quantity\": 2,\n      \"price\": 1200000\n    }\n  ],\n  \"discount_code\": \"{{discount_code}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/orders/calculate"
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/orders/{{order_id}}"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/orders/{{order_id}}/cancel"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"paid\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "Track Order",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/orders/{{order_id}}/track"
+          }
+        },
+        {
+          "name": "Apply Discount",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"discount_code\": \"{{discount_code}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/orders/{{order_id}}/discount"
+          }
+        },
+        {
+          "name": "Add Item To Order",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"item\": {\n    \"product_id\": \"{{product_id}}\",\n    \"quantity\": 1,\n    \"price\": 1200000\n  }\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/orders/{{order_id}}/items"
+          }
+        },
+        {
+          "name": "Remove Item From Order",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/orders/{{order_id}}/items/{{product_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Payments",
+      "item": [
+        {
+          "name": "Create Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.payment_id) pm.collectionVariables.set('payment_id', json.payment_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"payment_method\": \"card\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": "{{base_url}}/payments"
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/payments/{{payment_id}}"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080/api", "type": "string" },
+    { "key": "email", "value": "postman@test.kz", "type": "string" },
+    { "key": "password", "value": "password123", "type": "string" },
+    { "key": "new_password", "value": "password456", "type": "string" },
+    { "key": "name", "value": "Postman Tester", "type": "string" },
+    { "key": "verify_token", "value": "dummy-token-PASTE_USER_ID", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" },
+    { "key": "user_id", "value": "", "type": "string" },
+    { "key": "category_id", "value": "", "type": "string" },
+    { "key": "category_name", "value": "Electronics", "type": "string" },
+    { "key": "product_id", "value": "", "type": "string" },
+    { "key": "product_name", "value": "Gaming Laptop", "type": "string" },
+    { "key": "product_description", "value": "High performance laptop", "type": "string" },
+    { "key": "search_query", "value": "Laptop", "type": "string" },
+    { "key": "order_id", "value": "", "type": "string" },
+    { "key": "payment_id", "value": "", "type": "string" },
+    { "key": "discount_code", "value": "SALE10", "type": "string" }
+  ]
 }

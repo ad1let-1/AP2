@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { getMe, loginUser, registerUser, logout } from '../api/auth.api'
 import { useAuthStore } from '../store/authStore'
@@ -13,9 +14,10 @@ export function useGetMe() {
   })
 }
 
-export function useLogin() {
+export function useLogin(redirectTo = '/') {
   const queryClient = useQueryClient()
   const { setAuth } = useAuthStore()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: loginUser,
@@ -23,6 +25,7 @@ export function useLogin() {
       setAuth(data.user, data.token, data.refresh_token)
       queryClient.invalidateQueries({ queryKey: ['me'] })
       toast.success('Logged in successfully')
+      navigate(redirectTo, { replace: true })
     },
     onError: (error) => {
       const message = error.response?.data?.message || 'Login failed'
@@ -31,9 +34,10 @@ export function useLogin() {
   })
 }
 
-export function useRegister() {
+export function useRegister(redirectTo = '/') {
   const queryClient = useQueryClient()
   const { setAuth } = useAuthStore()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: registerUser,
@@ -41,6 +45,7 @@ export function useRegister() {
       setAuth(data.user, data.token, data.refresh_token)
       queryClient.invalidateQueries({ queryKey: ['me'] })
       toast.success('Registered successfully')
+      navigate(redirectTo, { replace: true })
     },
     onError: (error) => {
       const message = error.response?.data?.message || 'Registration failed'

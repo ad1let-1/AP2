@@ -97,3 +97,23 @@ export const calculateTotal = async (data) => {
   const response = await orderInstance.post('/orders/calculate', data)
   return response.data
 }
+
+/**
+ * AddItemToOrder — POST /orders/:id/items
+ * @param {string} orderId
+ * @param {{ product_id: string, quantity: number, price: number }} item
+ */
+export const addItemToOrder = async (orderId, item) => {
+  const response = await orderInstance.post(`/orders/${orderId}/items`, item)
+  return response.data
+}
+
+/**
+ * RemoveItemFromOrder — DELETE /orders/:id/items/:productId
+ * @param {string} orderId
+ * @param {string} productId
+ */
+export const removeItemFromOrder = async (orderId, productId) => {
+  const response = await orderInstance.delete(`/orders/${orderId}/items/${productId}`)
+  return response.data
+}
