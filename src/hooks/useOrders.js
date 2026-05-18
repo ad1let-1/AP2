@@ -23,18 +23,24 @@ export function useOrderDetail(id) {
   })
 }
 
-export function useCreateOrder() {
+export function useCreateOrder(options = {}) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: createOrder,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       toast.success('Order created successfully')
+      if (options.onSuccess) {
+        options.onSuccess(data)
+      }
     },
     onError: (error) => {
       const message = error.response?.data?.message || 'Failed to create order'
       toast.error(message)
+      if (options.onError) {
+        options.onError(error)
+      }
     },
   })
 }
@@ -50,6 +56,22 @@ export function useCancelOrder() {
     },
     onError: (error) => {
       const message = error.response?.data?.message || 'Failed to cancel order'
+      toast.error(message)
+    },
+  })
+}
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, status }) => import('../api/orders.api').then(m => m.updateOrderStatus(id, { status })),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      toast.success('Order status updated successfully')
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || 'Failed to update order status'
       toast.error(message)
     },
   })

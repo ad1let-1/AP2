@@ -31,10 +31,12 @@ func (u *OrderUsecase) CreateOrder(userID string, items []domain.OrderItem) (*do
 		return nil, err
 	}
 	
-	eventData, _ := json.Marshal(map[string]interface{}{
-		"order_id": order.ID, "user_id": userID, "total": total,
-	})
-	u.nc.Publish("order.created", eventData)
+	if u.nc != nil {
+		eventData, _ := json.Marshal(map[string]interface{}{
+			"order_id": order.ID, "user_id": userID, "total": total,
+		})
+		u.nc.Publish("order.created", eventData)
+	}
 	return order, nil
 }
 
@@ -65,8 +67,10 @@ func (u *OrderUsecase) CreatePayment(orderID, method string) (*domain.Payment, e
 	// Simulate async payment processing
 	go func() {
 		u.repo.UpdateOrderStatus(orderID, "PAID")
-		eventData, _ := json.Marshal(map[string]string{"order_id": orderID, "status": "PAID"})
-		u.nc.Publish("order.paid", eventData)
+		if u.nc != nil {
+			eventData, _ := json.Marshal(map[string]string{"order_id": orderID, "status": "PAID"})
+			u.nc.Publish("order.paid", eventData)
+		}
 	}()
 	return p, nil
 }

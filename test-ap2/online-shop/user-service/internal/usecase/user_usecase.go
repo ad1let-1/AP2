@@ -33,8 +33,10 @@ func (u *UserUsecase) Register(email, password, name string) (*domain.User, erro
 		return nil, err
 	}
 	// Publish event
-	eventData, _ := json.Marshal(map[string]string{"email": user.Email, "id": user.ID})
-	u.nc.Publish("user.created", eventData)
+	if u.nc != nil {
+		eventData, _ := json.Marshal(map[string]string{"email": user.Email, "id": user.ID})
+		u.nc.Publish("user.created", eventData)
+	}
 	return user, nil
 }
 
@@ -46,16 +48,22 @@ func (u *UserUsecase) Login(email, password string) (string, string, *domain.Use
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", "", nil, errors.New("invalid credentials")
 	}
-	
+	role := "user"
+	if user.Email == "admin@gmail.com" {
+		role = "admin"
+	}
+
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": user.ID,
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"id":   user.ID,
+		"role": role,
+		"exp":  time.Now().Add(time.Hour * 24).Unix(), // 24 hours exp
 	})
 	accessTokenString, _ := accessToken.SignedString([]byte("secret"))
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": user.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"id":   user.ID,
+		"role": role,
+		"exp":  time.Now().Add(time.Hour * 24 * 7).Unix(),
 	})
 	refreshTokenString, _ := refreshToken.SignedString([]byte("secret"))
 

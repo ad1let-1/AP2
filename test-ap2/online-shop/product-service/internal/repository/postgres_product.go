@@ -18,6 +18,24 @@ func NewPostgresProductRepository(db *sql.DB) domain.ProductRepository {
 	db.Exec(`CREATE TABLE IF NOT EXISTS reviews (
 		id UUID PRIMARY KEY, user_id UUID, product_id UUID, rating INT, comment TEXT
 	)`)
+
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM categories").Scan(&count)
+	if count == 0 {
+		db.Exec(`INSERT INTO categories (id, name) VALUES 
+			('11111111-1111-1111-1111-111111111111', 'clothing'),
+			('22222222-2222-2222-2222-222222222222', 'gadgets'),
+			('33333333-3333-3333-3333-333333333333', 'tech')`)
+
+		db.Exec(`INSERT INTO products (id, name, description, price, stock, category_id) VALUES 
+			('a1111111-1111-1111-1111-111111111111', 'Vintage Leather Jacket', 'Premium grade distressed cowhide leather jacket with quilted lining and silver zippers. Timeless luxury.', 45000, 25, '11111111-1111-1111-1111-111111111111'),
+			('a2222222-2222-2222-2222-222222222222', 'Oversized Premium Hoodie', 'Heavyweight 450gsm organic cotton hoodie in midnight black. Features drop shoulder fit and double-layered hood.', 18000, 40, '11111111-1111-1111-1111-111111111111'),
+			('a3333333-3333-3333-3333-333333333333', 'Novus Smartwatch Gen 4', 'Sleek minimalist aluminum smartwatch with Always-On OLED display, sleep metrics, and up to 7 days battery life.', 28000, 15, '22222222-2222-2222-2222-222222222222'),
+			('a4444444-4444-4444-4444-444444444444', 'Wireless ANC Headphones', 'Hi-Fi stereo bluetooth headphones with hybrid Active Noise Cancellation, memory foam ear cups, and 40h runtime.', 32000, 30, '22222222-2222-2222-2222-222222222222'),
+			('a5555555-5555-5555-5555-555555555555', 'Mechanical Keyless Keyboard', 'Ultra-compact hot-swappable mechanical keyboard with lubricated linear yellow switches and customizable RGB.', 15000, 50, '33333333-3333-3333-3333-333333333333'),
+			('a6666666-6666-6666-6666-666666666666', '4K Ultra-Wide Monitor 34"', 'Stunning 144Hz curved ultrawide IPS display with HDR400, 99% sRGB color gamut, and integrated USB-C dock.', 125000, 8, '33333333-3333-3333-3333-333333333333')`)
+	}
+
 	return &postgresProductRepository{db: db}
 }
 

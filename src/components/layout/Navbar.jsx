@@ -85,6 +85,11 @@ export default function Navbar() {
                     <span>{user?.name}</span>
                     <span className={styles.accountEmail}>{user?.email}</span>
                   </div>
+                  {user?.email === 'admin@gmail.com' && (
+                    <Link to="/admin/dashboard" className={styles.accountItem} style={{ color: '#e8ff00', fontWeight: '700' }}>
+                      Admin Panel
+                    </Link>
+                  )}
                   <Link to="/profile" className={styles.accountItem}>Profile</Link>
                   <Link to="/orders" className={styles.accountItem}>Orders</Link>
                   <button

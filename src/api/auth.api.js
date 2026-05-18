@@ -84,3 +84,30 @@ export const changePassword = async (id, data) => {
   const response = await authInstance.put(`/users/${id}/password`, data)
   return response.data
 }
+
+/**
+ * VerifyEmail — GET /users/verify
+ * @param {string} token
+ */
+export const verifyEmail = async (token) => {
+  const response = await authInstance.get(`/users/verify`, { params: { token } })
+  return response.data
+}
+
+/**
+ * ResendVerification — POST /users/resend-verification
+ * @param {{ email: string }} data
+ */
+export const resendVerification = async (data) => {
+  const response = await authInstance.post('/users/resend-verification', data)
+  return response.data
+}
+
+/**
+ * ListUsers — GET /users
+ * @param {{ page?: number, limit?: number }} params
+ */
+export const listUsers = async (params = {}) => {
+  const response = await authInstance.get('/users', { params })
+  return response.data
+}

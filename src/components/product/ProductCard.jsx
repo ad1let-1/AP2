@@ -22,7 +22,32 @@ export default function ProductCard({ product, skeleton = false }) {
 
   if (skeleton) return <SkeletonCard />
 
-  const primaryImage = product.images?.[0] || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80`
+  const getCategoryImage = (categoryId, productId) => {
+    // Clothing category
+    if (categoryId === '11111111-1111-1111-1111-111111111111') {
+      if (productId === 'a1111111-1111-1111-1111-111111111111') {
+        return 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80' // Leather Jacket
+      }
+      return 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80' // Hoodie
+    }
+    // Gadgets
+    if (categoryId === '22222222-2222-2222-2222-222222222222') {
+      if (productId === 'a3333333-3333-3333-3333-333333333333') {
+        return 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80' // Smartwatch
+      }
+      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80' // Headphones
+    }
+    // Tech
+    if (categoryId === '33333333-3333-3333-3333-333333333333') {
+      if (productId === 'a5555555-5555-5555-5555-555555555555') {
+        return 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80' // Keyboard
+      }
+      return 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80' // Ultra-wide Monitor
+    }
+    return `https://picsum.photos/seed/${productId || 'default'}/600/600`
+  }
+
+  const primaryImage = product.images?.[0] || getCategoryImage(product.category_id, product.id)
   const secondaryImage = product.images?.[1] || primaryImage
 
   const handleQuickAdd = (e) => {

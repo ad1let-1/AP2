@@ -5,6 +5,7 @@ import (
 	pb "online-shop/pb"
 	"user-service/internal/usecase"
 	"time"
+	"log"
 )
 
 type UserHandler struct {
@@ -19,6 +20,7 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 func (h *UserHandler) RegisterUser(ctx context.Context, req *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
 	user, err := h.usecase.Register(req.Email, req.Password, req.Name)
 	if err != nil {
+		log.Printf("[gRPC UserHandler] RegisterUser error: %v", err)
 		return nil, err
 	}
 	return &pb.RegisterUserResponse{

@@ -66,10 +66,9 @@ export default function CheckoutPage() {
 
     const orderPayload = {
       items: items.map((i) => ({
-        productId: i.id,
-        quantity: i.quantity,
-        size: i.size,
-        price: i.price,
+        product_id: i.product?.id || i.id,
+        quantity: Number(i.quantity) || 1,
+        price: Number(i.product?.price) || Number(i.price) || 0,
       })),
       address: {
         firstName: form.firstName,

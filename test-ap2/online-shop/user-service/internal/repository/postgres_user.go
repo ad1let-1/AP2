@@ -5,6 +5,7 @@ import (
 	"user-service/internal/domain"
 	"github.com/google/uuid"
 	"time"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type postgresUserRepository struct {
@@ -22,6 +23,16 @@ func NewPostgresUserRepository(db *sql.DB) domain.UserRepository {
 		created_at TIMESTAMP,
 		updated_at TIMESTAMP
 	)`)
+
+	// Seed admin
+	var adminExists bool
+	db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = 'admin@gmail.com')").Scan(&adminExists)
+	if !adminExists {
+		hashedAdminPassword, _ := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
+		db.Exec("INSERT INTO users (id, email, password, name, is_verified, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			uuid.New().String(), "admin@gmail.com", string(hashedAdminPassword), "Administrator", true, time.Now(), time.Now())
+	}
+
 	return &postgresUserRepository{db: db}
 }
 
