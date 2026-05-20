@@ -19,4 +19,11 @@ type UserRepository interface {
 	Update(user *User) error
 	Delete(id string) error
 	List(page, limit int) ([]*User, int, error)
+	SetVerified(id string) error
+}
+
+type UserCacheRepository interface {
+	SetSession(userID, token string, ttl time.Duration) error
+	GetSession(token string) (string, error)
+	DeleteSession(token string) error
 }

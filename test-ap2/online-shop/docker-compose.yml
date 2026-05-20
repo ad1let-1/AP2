@@ -1,60 +1,97 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: online_shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   nats:
     image: nats:latest
+    command: ["--js", "-m", "8222"]
     ports:
       - "4222:4222"
       - "8222:8222"
 
   user-service:
-    build: 
+    build:
       context: .
       dockerfile: user-service/Dockerfile
     environment:
-      - DATABASE_URL=postgres://postgres:bekarys7@host.docker.internal:5432/online-shop?sslmode=disable
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/online_shop?sslmode=disable
       - NATS_URL=nats://nats:4222
+      - REDIS_ADDR=redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
     ports:
       - "50051:50051"
     depends_on:
-      - nats
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
 
   product-service:
-    build: 
+    build:
       context: .
       dockerfile: product-service/Dockerfile
     environment:
-      - DATABASE_URL=postgres://postgres:bekarys7@host.docker.internal:5432/online-shop?sslmode=disable
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/online_shop?sslmode=disable
       - REDIS_ADDR=redis:6379
       - NATS_URL=nats://nats:4222
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "50052:50052"
     depends_on:
-      - redis
-      - nats
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
 
   order-service:
-    build: 
+    build:
       context: .
       dockerfile: order-service/Dockerfile
     environment:
-      - DATABASE_URL=postgres://postgres:bekarys7@host.docker.internal:5432/online-shop?sslmode=disable
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/online_shop?sslmode=disable
       - NATS_URL=nats://nats:4222
+      - REDIS_ADDR=redis:6379
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "50053:50053"
     depends_on:
-      - nats
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
 
   api-gateway:
     build:
@@ -64,6 +101,7 @@ services:
       - USER_SERVICE_URL=user-service:50051
       - PRODUCT_SERVICE_URL=product-service:50052
       - ORDER_SERVICE_URL=order-service:50053
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "8080:8080"
     depends_on:
@@ -72,15 +110,13 @@ services:
       - order-service
 
   frontend:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
     ports:
       - "3000:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
     depends_on:
       - api-gateway
-
-  # ─── Observability (Prometheus, Grafana, Jaeger) ───────────────────────
 
   prometheus:
     image: prom/prometheus:latest
@@ -89,8 +125,6 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-    depends_on:
-      - api-gateway
 
   grafana:
     image: grafana/grafana:latest
@@ -98,16 +132,14 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    depends_on:
-      - prometheus
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
 
   jaeger:
     image: jaegertracing/all-in-one:latest
     restart: unless-stopped
     ports:
-      - "16686:16686" # Jaeger Web UI
-      - "4317:4317"   # OpenTelemetry gRPC receiver
+      - "16686:16686"
+      - "4317:4317"
 
 volumes:
   pgdata:

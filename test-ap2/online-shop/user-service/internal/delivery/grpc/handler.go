@@ -6,6 +6,8 @@ import (
 	"user-service/internal/usecase"
 	"time"
 	"log"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
@@ -46,11 +48,16 @@ func (h *UserHandler) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 }
 
 func (h *UserHandler) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
-	return &pb.RefreshTokenResponse{AccessToken: "new_dummy_token"}, nil
+	newAccess, err := h.usecase.RefreshToken(req.RefreshToken)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "invalid or expired refresh token")
+	}
+	return &pb.RefreshTokenResponse{AccessToken: newAccess}, nil
 }
 
 func (h *UserHandler) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	return &pb.LogoutResponse{Success: true}, nil
+	err := h.usecase.Logout(req.AccessToken)
+	return &pb.LogoutResponse{Success: err == nil}, err
 }
 
 func (h *UserHandler) GetUserByID(ctx context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserByIDResponse, error) {

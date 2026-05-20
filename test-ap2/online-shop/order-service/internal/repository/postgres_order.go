@@ -13,12 +13,6 @@ type postgresOrderRepository struct {
 }
 
 func NewPostgresOrderRepository(db *sql.DB) domain.OrderRepository {
-	db.Exec(`CREATE TABLE IF NOT EXISTS orders (
-		id UUID PRIMARY KEY, user_id UUID, items JSONB, total_amount FLOAT, status VARCHAR(50), created_at TIMESTAMP
-	)`)
-	db.Exec(`CREATE TABLE IF NOT EXISTS payments (
-		id UUID PRIMARY KEY, order_id UUID, payment_method VARCHAR(50), status VARCHAR(50)
-	)`)
 	return &postgresOrderRepository{db: db}
 }
 
@@ -80,6 +74,27 @@ func (r *postgresOrderRepository) ListOrders(userID string, page, limit int) ([]
 func (r *postgresOrderRepository) UpdateOrderStatus(id, status string) error {
 	_, err := r.db.Exec("UPDATE orders SET status = $1 WHERE id = $2", status, id)
 	return err
+}
+
+func (r *postgresOrderRepository) UpdateOrder(o *domain.Order) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	itemsJSON, err := json.Marshal(o.Items)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("UPDATE orders SET items = $1, total_amount = $2, status = $3 WHERE id = $4",
+		itemsJSON, o.TotalAmount, o.Status, o.ID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (r *postgresOrderRepository) CreatePayment(p *domain.Payment) error {
