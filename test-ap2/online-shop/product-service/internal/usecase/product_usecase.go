@@ -26,7 +26,7 @@ func (u *ProductUsecase) CreateProduct(name, description string, price float64, 
 
 func (u *ProductUsecase) GetProductByID(id string) (*domain.Product, error) {
 	p, err := u.cache.GetProduct(id)
-	if err == nil {
+	if err == nil && p != nil {
 		return p, nil
 	}
 	p, err = u.repo.GetProductByID(id)
@@ -65,7 +65,7 @@ func (u *ProductUsecase) DeleteProduct(id string) error {
 
 func (u *ProductUsecase) ListProducts(page, limit int) ([]*domain.Product, int, error) {
 	products, err := u.cache.GetProductList(page, limit)
-	if err == nil {
+	if err == nil && products != nil {
 		// Just returning dummy total for cached hit
 		return products, len(products), nil
 	}

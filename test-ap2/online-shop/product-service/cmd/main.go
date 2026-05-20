@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net"
 	"os"
@@ -10,22 +11,43 @@ import (
 	"product-service/internal/usecase"
 	pb "online-shop/pb"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/nats-io/nats.go"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
-	"database/sql"
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	dbConn := os.Getenv("DATABASE_URL")
 	if dbConn == "" {
-		dbConn = "postgres://postgres:bekarys7@localhost:5432/productdb?sslmode=disable"
+		dbConn = "postgres://postgres:bekarys7@localhost:5432/online_shop?sslmode=disable"
 	}
 	db, err := sql.Open("postgres", dbConn)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
+
+	// Run Database Migrations
+	migrationPath := "file://migrations"
+	if _, err := os.Stat("migrations"); os.IsNotExist(err) {
+		migrationPath = "file:///migrations"
+	}
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		log.Fatalf("Could not create postgres driver for migrations: %v", err)
+	}
+	m, err := migrate.NewWithDatabaseInstance(migrationPath, "postgres", driver)
+	if err != nil {
+		log.Fatalf("Migration init failed: %v", err)
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Migration up failed: %v", err)
+	}
+	log.Println("Database migrations applied successfully!")
 
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
@@ -49,7 +71,13 @@ func main() {
 	cacheRepo := repository.NewRedisCacheRepository(rdb)
 	productUsecase := usecase.NewProductUsecase(productRepo, cacheRepo, nc)
 	productHandler := deliveryGrpc.NewProductHandler(productUsecase)
-	usecase.RegisterProductSubscribers(nc, productUsecase)
+
+	// Initialize JetStream job queue with retry for subscribers
+	jq := usecase.RegisterProductSubscribers(nc, productUsecase)
+	if jq != nil {
+		defer jq.Shutdown()
+		log.Println("[Main] JetStream job queue with retry initialized for Product Service")
+	}
 
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
@@ -64,4 +92,3 @@ func main() {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
-

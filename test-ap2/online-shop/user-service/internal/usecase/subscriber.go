@@ -1,18 +1,12 @@
 package usecase
 
 import (
-	"encoding/json"
 	"log"
 	"github.com/nats-io/nats.go"
 )
 
-func RegisterUserSubscribers(nc *nats.Conn, emailService *EmailService) {
-	nc.Subscribe("user.created", func(m *nats.Msg) {
-		var data map[string]string
-		json.Unmarshal(m.Data, &data)
-		email := data["email"]
-		id := data["id"]
-		log.Printf("Event user.created received for %s (%s)", email, id)
-		emailService.SendVerificationEmail(email, "dummy-token-"+id)
-	})
+// RegisterUserSubscribers is now a stub because user-service verification email is sent directly inside Register
+func RegisterUserSubscribers(nc *nats.Conn, emailService *EmailService) *JobQueue {
+	log.Println("[UserSubscriber] No subscribers registered for User Service (local verification instead)")
+	return nil
 }

@@ -13,17 +13,6 @@ type postgresUserRepository struct {
 }
 
 func NewPostgresUserRepository(db *sql.DB) domain.UserRepository {
-	// Auto migrate
-	db.Exec(`CREATE TABLE IF NOT EXISTS users (
-		id UUID PRIMARY KEY,
-		email VARCHAR(255) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL,
-		name VARCHAR(255),
-		is_verified BOOLEAN DEFAULT FALSE,
-		created_at TIMESTAMP,
-		updated_at TIMESTAMP
-	)`)
-
 	// Seed admin
 	var adminExists bool
 	db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = 'admin@gmail.com')").Scan(&adminExists)
@@ -97,4 +86,9 @@ func (r *postgresUserRepository) List(page, limit int) ([]*domain.User, int, err
 	var total int
 	r.db.QueryRow("SELECT COUNT(*) FROM users").Scan(&total)
 	return users, total, nil
+}
+
+func (r *postgresUserRepository) SetVerified(id string) error {
+	_, err := r.db.Exec("UPDATE users SET is_verified = true WHERE id = $1", id)
+	return err
 }

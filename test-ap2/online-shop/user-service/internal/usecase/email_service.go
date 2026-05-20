@@ -18,7 +18,6 @@ func NewEmailService() *EmailService {
 	host := "smtp.gmail.com"
 	
 	if from == "" {
-		// Default or log warning
 		log.Println("SMTP_USER is not set. Email sending will be skipped or simulated.")
 	}
 	auth := smtp.PlainAuth("", from, password, host)

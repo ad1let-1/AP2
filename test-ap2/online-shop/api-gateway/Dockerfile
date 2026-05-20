@@ -6,9 +6,9 @@ WORKDIR /workspace
 COPY go.work go.work.sum ./
 COPY pb ./pb
 COPY api-gateway ./api-gateway
-COPY order-service ./order-service
-COPY product-service ./product-service
-COPY user-service ./user-service
+COPY order-service/go.mod ./order-service/
+COPY product-service/go.mod ./product-service/
+COPY user-service/go.mod ./user-service/
 
 WORKDIR /workspace/api-gateway
 RUN go mod download

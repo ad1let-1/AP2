@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -22,8 +23,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		
 		tokenStr := parts[1]
+		jwtSecret := os.Getenv("JWT_SECRET")
+		if jwtSecret == "" {
+			jwtSecret = "fallback-dev-only-secret"
+		}
+
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return []byte("secret"), nil
+			return []byte(jwtSecret), nil
 		})
 		
 		if err != nil || !token.Valid {
@@ -48,7 +54,6 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Implement basic logging
 		c.Next()
 	}
 }
